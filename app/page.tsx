@@ -21,7 +21,8 @@ export default function Home() {
 
   const open = (m:Modal) => { setNotice(""); setModal(m); };
   const submit = () => {
-    if (!topic.trim() && modal !== "profile" && modal !== "edit") { setNotice("Escribe primero el tema o la pregunta para continuar."); return; }
+    const source = modal === "assistant" || modal === "edit" ? question : topic;
+    if (!source.trim() && modal !== "profile") { setNotice("Escribe primero el tema o la pregunta para continuar."); return; }
     setNotice("¡Perfecto! Esta pantalla ya está preparada. En el siguiente paso conectaremos la IA para generar el contenido real y guardarlo en tu espacio.");
   };
 
