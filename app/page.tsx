@@ -63,7 +63,7 @@ export default function Home() {
     } catch (error) {\n      setNotice("No se ha podido iniciar la lectura de imágenes. Comprueba tu conexión e inténtalo de nuevo.");
     } finally { setIsReading(false); }
   };\n\n  const submit = () => {
-    const source = modal === "assistant" || modal === "edit" ? question : topic;
+    const source = modal === "assistant" ? `${question}\n${assistantText}` : modal === "edit" ? question : modal === "exam" ? `${topic}\n${examText}` : topic;
     if (!source.trim() && modal !== "profile" && !(modal === "homework" && photos.length > 0)) { setNotice("Escribe el enunciado o añade al menos una foto para continuar."); return; }
     setNotice("¡Perfecto! Esta pantalla ya está preparada. En el siguiente paso conectaremos la IA para generar el contenido real y guardarlo en tu espacio.");
   };
