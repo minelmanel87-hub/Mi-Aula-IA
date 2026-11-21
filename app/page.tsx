@@ -47,7 +47,22 @@ export default function Home() {
     const text = `Mi examen de Mi Aula IA: ${noTitle ? "" : (examTitle || "Examen")}. Tema: ${topic}. Nivel: ${level}. Preguntas: ${count}.`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
   };
-  const readPhotos = async () => {\n    if (!photos.length) { setNotice("Añade al menos una foto para poder leerla."); return; }\n    setIsReading(true); setNotice("Leyendo las imágenes…"); setRecognizedText("");\n    try {\n      const { createWorker } = await import("tesseract.js");\n      const worker = await createWorker("spa");\n      const parts: string[] = [];\n      for (let i = 0; i < photos.length; i++) {\n        setNotice(`Leyendo foto ${i + 1} de ${photos.length}…`);\n        const result = await worker.recognize(photos[i]);\n        if (result.data.text.trim()) parts.push(`FOTO ${i + 1}\\n${result.data.text.trim()}`);\n      }\n      await worker.terminate();\n      const text = parts.join("\\n\\n");\n      setRecognizedText(text);\n      setNotice(text ? "Lectura terminada. Revisa el texto reconocido y corrige cualquier error." : "No se ha podido reconocer texto. Prueba con fotos más nítidas y bien iluminadas.");\n    } catch (error) {\n      setNotice("No se ha podido iniciar la lectura de imágenes. Comprueba tu conexión e inténtalo de nuevo.");\n    } finally { setIsReading(false); }\n  };\n\n  const submit = () => {
+  const readPhotos = async () => {\n    if (!photos.length) { setNotice("Añade al menos una foto para poder leerla."); return; }
+    setIsReading(true); setNotice("Leyendo las imágenes…"); setRecognizedText("");
+    try {\n      const { createWorker } = await import("tesseract.js");
+      const worker = await createWorker("spa");
+      const parts: string[] = [];
+      for (let i = 0; i < photos.length; i++) {\n        setNotice(`Leyendo foto ${i + 1} de ${photos.length}…`);
+        const result = await worker.recognize(photos[i]);
+        if (result.data.text.trim()) parts.push(`FOTO ${i + 1}\\n${result.data.text.trim()}`);
+      }
+      await worker.terminate();
+      const text = parts.join("\\n\\n");
+      setRecognizedText(text);
+      setNotice(text ? "Lectura terminada. Revisa el texto reconocido y corrige cualquier error." : "No se ha podido reconocer texto. Prueba con fotos más nítidas y bien iluminadas.");
+    } catch (error) {\n      setNotice("No se ha podido iniciar la lectura de imágenes. Comprueba tu conexión e inténtalo de nuevo.");
+    } finally { setIsReading(false); }
+  };\n\n  const submit = () => {
     const source = modal === "assistant" || modal === "edit" ? question : topic;
     if (!source.trim() && modal !== "profile" && !(modal === "homework" && photos.length > 0)) { setNotice("Escribe el enunciado o añade al menos una foto para continuar."); return; }
     setNotice("¡Perfecto! Esta pantalla ya está preparada. En el siguiente paso conectaremos la IA para generar el contenido real y guardarlo en tu espacio.");
