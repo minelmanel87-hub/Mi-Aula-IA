@@ -56,15 +56,20 @@ export default function Home() {
     setIsReading(true); setNotice("Leyendo las imágenes…"); onText("");
     let worker: Awaited<ReturnType<typeof import("tesseract.js").createWorker>> | undefined;
     try {
-      const { createWorker } = await import("tesseract.js");\n      worker = await createWorker("spa");
+      const { createWorker } = await import("tesseract.js");
+      worker = await createWorker("spa");
       const parts: string[] = [];
       for (let i = 0; i < files.length; i++) {
         setNotice(`Leyendo foto ${i + 1} de ${files.length}…`);
         const result = await worker.recognize(files[i]);
-        if (result.data.text.trim()) parts.push(`FOTO ${i + 1}\\n${result.data.text.trim()}`);\n      }
+        if (result.data.text.trim()) parts.push(`FOTO ${i + 1}\\n${result.data.text.trim()}`);
+      }
       const text = parts.join("\\n\\n"); onText(text);
-      setNotice(text ? "Lectura terminada. Revisa el texto reconocido." : "No se ha reconocido texto. Prueba con fotos más nítidas.");\n    } catch { setNotice("No se ha podido leer alguna imagen. Comprueba tu conexión e inténtalo de nuevo."); }
-    finally { if (worker) await worker.terminate(); setIsReading(false); }\n  };\n
+      setNotice(text ? "Lectura terminada. Revisa el texto reconocido." : "No se ha reconocido texto. Prueba con fotos más nítidas.");
+    } catch { setNotice("No se ha podido leer alguna imagen. Comprueba tu conexión e inténtalo de nuevo."); }
+    finally { if (worker) await worker.terminate(); setIsReading(false); }
+  };
+
   const readPhotos = async () => {
     if (!photos.length) { setNotice("Añade al menos una foto para poder leerla."); return; }
     setIsReading(true); setNotice("Leyendo las imágenes…"); setRecognizedText("");
@@ -84,9 +89,12 @@ export default function Home() {
     } catch (error) {
       setNotice("No se ha podido iniciar la lectura de imágenes. Comprueba tu conexión e inténtalo de nuevo.");
     } finally { setIsReading(false); }
-  };\n
+  };
+
   const submit = () => {
-    const source = modal === "assistant" ? `${question}\n${assistantText}` : modal === "edit" ? question : modal === "exam" ? `${topic}\n${examText}` : topic;
+    const source = modal === "assistant" ? `${question}
+${assistantText}` : modal === "edit" ? question : modal === "exam" ? `${topic}
+${examText}` : topic;
     if (!source.trim() && modal !== "profile" && !(modal === "homework" && photos.length > 0)) { setNotice("Escribe el enunciado o añade al menos una foto para continuar."); return; }
     setNotice("¡Perfecto! Esta pantalla ya está preparada. En el siguiente paso conectaremos la IA para generar el contenido real y guardarlo en tu espacio.");
   };
