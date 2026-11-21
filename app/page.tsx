@@ -23,9 +23,13 @@ export default function Home() {
   const [reviewText,setReviewText] = useState("");
   const [question,setQuestion] = useState("");
   const [notice,setNotice] = useState("");
-  const [photos,setPhotos] = useState<File[]>([]);\n  const [examPhotos,setExamPhotos] = useState<File[]>([]);\n  const [assistantPhotos,setAssistantPhotos] = useState<File[]>([]);
+  const [photos,setPhotos] = useState<File[]>([]);
+  const [examPhotos,setExamPhotos] = useState<File[]>([]);
+  const [assistantPhotos,setAssistantPhotos] = useState<File[]>([]);
   const [recognizedText,setRecognizedText] = useState("");
-  const [isReading,setIsReading] = useState(false);\n  const [examText,setExamText] = useState("");\n  const [assistantText,setAssistantText] = useState("");
+  const [isReading,setIsReading] = useState(false);
+  const [examText,setExamText] = useState("");
+  const [assistantText,setAssistantText] = useState("");
   const [photoLimit,setPhotoLimit] = useState(10);
   const [limitDraft,setLimitDraft] = useState("10");
 
@@ -47,12 +51,29 @@ export default function Home() {
     const text = `Mi examen de Mi Aula IA: ${noTitle ? "" : (examTitle || "Examen")}. Tema: ${topic}. Nivel: ${level}. Preguntas: ${count}.`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
   };
-  const recognizeImages = async (files: File[], onText: (value: string) => void) => {\n    if (!files.length) { setNotice("Añade al menos una foto."); return; }\n    setIsReading(true); setNotice("Leyendo las imágenes…"); onText("");\n    let worker: Awaited<ReturnType<typeof import("tesseract.js").createWorker>> | undefined;\n    try {\n      const { createWorker } = await import("tesseract.js");\n      worker = await createWorker("spa");\n      const parts: string[] = [];\n      for (let i = 0; i < files.length; i++) {\n        setNotice(`Leyendo foto ${i + 1} de ${files.length}…`);\n        const result = await worker.recognize(files[i]);\n        if (result.data.text.trim()) parts.push(`FOTO ${i + 1}\\n${result.data.text.trim()}`);\n      }\n      const text = parts.join("\\n\\n"); onText(text);\n      setNotice(text ? "Lectura terminada. Revisa el texto reconocido." : "No se ha reconocido texto. Prueba con fotos más nítidas.");\n    } catch { setNotice("No se ha podido leer alguna imagen. Comprueba tu conexión e inténtalo de nuevo."); }\n    finally { if (worker) await worker.terminate(); setIsReading(false); }\n  };\n\n  const readPhotos = async () => {\n    if (!photos.length) { setNotice("Añade al menos una foto para poder leerla."); return; }
+  const recognizeImages = async (files: File[], onText: (value: string) => void) => {
+    if (!files.length) { setNotice("Añade al menos una foto."); return; }
+    setIsReading(true); setNotice("Leyendo las imágenes…"); onText("");
+    let worker: Awaited<ReturnType<typeof import("tesseract.js").createWorker>> | undefined;
+    try {
+      const { createWorker } = await import("tesseract.js");\n      worker = await createWorker("spa");
+      const parts: string[] = [];
+      for (let i = 0; i < files.length; i++) {
+        setNotice(`Leyendo foto ${i + 1} de ${files.length}…`);
+        const result = await worker.recognize(files[i]);
+        if (result.data.text.trim()) parts.push(`FOTO ${i + 1}\\n${result.data.text.trim()}`);\n      }
+      const text = parts.join("\\n\\n"); onText(text);
+      setNotice(text ? "Lectura terminada. Revisa el texto reconocido." : "No se ha reconocido texto. Prueba con fotos más nítidas.");\n    } catch { setNotice("No se ha podido leer alguna imagen. Comprueba tu conexión e inténtalo de nuevo."); }
+    finally { if (worker) await worker.terminate(); setIsReading(false); }\n  };\n
+  const readPhotos = async () => {
+    if (!photos.length) { setNotice("Añade al menos una foto para poder leerla."); return; }
     setIsReading(true); setNotice("Leyendo las imágenes…"); setRecognizedText("");
-    try {\n      const { createWorker } = await import("tesseract.js");
+    try {
+      const { createWorker } = await import("tesseract.js");
       const worker = await createWorker("spa");
       const parts: string[] = [];
-      for (let i = 0; i < photos.length; i++) {\n        setNotice(`Leyendo foto ${i + 1} de ${photos.length}…`);
+      for (let i = 0; i < photos.length; i++) {
+        setNotice(`Leyendo foto ${i + 1} de ${photos.length}…`);
         const result = await worker.recognize(photos[i]);
         if (result.data.text.trim()) parts.push(`FOTO ${i + 1}\\n${result.data.text.trim()}`);
       }
@@ -60,9 +81,11 @@ export default function Home() {
       const text = parts.join("\\n\\n");
       setRecognizedText(text);
       setNotice(text ? "Lectura terminada. Revisa el texto reconocido y corrige cualquier error." : "No se ha podido reconocer texto. Prueba con fotos más nítidas y bien iluminadas.");
-    } catch (error) {\n      setNotice("No se ha podido iniciar la lectura de imágenes. Comprueba tu conexión e inténtalo de nuevo.");
+    } catch (error) {
+      setNotice("No se ha podido iniciar la lectura de imágenes. Comprueba tu conexión e inténtalo de nuevo.");
     } finally { setIsReading(false); }
-  };\n\n  const submit = () => {
+  };\n
+  const submit = () => {
     const source = modal === "assistant" ? `${question}\n${assistantText}` : modal === "edit" ? question : modal === "exam" ? `${topic}\n${examText}` : topic;
     if (!source.trim() && modal !== "profile" && !(modal === "homework" && photos.length > 0)) { setNotice("Escribe el enunciado o añade al menos una foto para continuar."); return; }
     setNotice("¡Perfecto! Esta pantalla ya está preparada. En el siguiente paso conectaremos la IA para generar el contenido real y guardarlo en tu espacio.");
