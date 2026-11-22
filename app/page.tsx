@@ -107,6 +107,7 @@ ${examText}` : topic;
         <button onClick={()=>open("exam")}><span className="navicon">✎</span><span className="navtext">Exámenes</span></button>
         <button onClick={()=>open("homework")}><span className="navicon">▤</span><span className="navtext">Mis deberes</span></button>
         <button onClick={()=>open("assistant")}><span className="navicon">✧</span><span className="navtext">Asistente IA</span></button>
+        <button onClick={()=>{window.location.href="/descargas"}}><span className="navicon">↓</span><span className="navtext">Descargas</span></button>
       </nav></div>
       <div><div className="navlabel">TU ESPACIO</div><nav className="nav">
         <button onClick={()=>open("profile")}><span className="navicon">♙</span><span className="navtext">Mi perfil</span></button>
